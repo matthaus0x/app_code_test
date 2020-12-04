@@ -92,8 +92,8 @@ Implement the functionality to remove a location. Parameter `:id` is required to
 - Improvements to code
 - Tests
 
-Spend two to four hours working on this assignment - make sure to finish the issues you start.
+Spend arouynd two hours working on this assignment - make sure to finish the issues you start.
 
-Put the code in a GitHub repository and send us the link (niklas.holmqvist@kry.se) when you're done. 
+Put the code in a GitHub repository and send us the link (paul.mckenna@kry.se) when you're done. 
 
 Good luck! ☺️
