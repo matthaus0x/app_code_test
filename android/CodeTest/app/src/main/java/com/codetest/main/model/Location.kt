@@ -2,18 +2,19 @@ package com.codetest.main.model
 
 import com.google.gson.JsonObject
 
-enum class Status(val value: Int) {
-    CLOUDY(0x2601),
-    SUNNY(0x2600),
-    MOSTLY_SUNNY(0x1F324),
-    PARTLY_SUNNY(0x26C5),
-    PARTLY_SUNNY_RAIN(0x1F326),
-    THUNDER_CLOUD_AND_RAIN(0x26C8),
-    TORNADO(0x1F32A),
-    BARELY_SUNNY(0x1F325),
-    LIGHTENING(0x1F329),
-    SNOW_CLOUD(0x1F328),
-    RAINY(0x1F327);
+//Maybe we should receive this values from some endpoint :)
+enum class Status(val value: Int, val description: String) {
+    CLOUDY(0x2601, "Cloudy"),
+    SUNNY(0x2600, "Sunny"),
+    MOSTLY_SUNNY(0x1F324, "Mostly Sunny"),
+    PARTLY_SUNNY(0x26C5, "Partly Sunny"),
+    PARTLY_SUNNY_RAIN(0x1F326, "Party Sunny Rain"),
+    THUNDER_CLOUD_AND_RAIN(0x26C8, "Thunder Cloud And Rain"),
+    TORNADO(0x1F32A, "Tornado"),
+    BARELY_SUNNY(0x1F325, "Barely Sunny"),
+    LIGHTENING(0x1F329, "Lightening"),
+    SNOW_CLOUD(0x1F328, "Snow Cloud"),
+    RAINY(0x1F327, "Rainy");
 
     companion object {
         fun from(string: String): Status = values().first { it.name == string }

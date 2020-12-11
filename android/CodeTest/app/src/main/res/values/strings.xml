@@ -4,4 +4,11 @@
     <string name="error_title">Error</string>
     <string name="error_message">Something went wrong</string>
     <string name="ok">OK</string>
+    <string name="add_forecast_location">Add forecast location</string>
+    <string name="location_name">Location name</string>
+    <string name="location_forecast">Select a forecast</string>
+    <string name="location_temperature">Temperature</string>
+    <string name="save_location">Save Location</string>
+    <string name="remote_local_title">Remove location</string>
+    <string name="remote_local_description">Do you want to remove this location?</string>
 </resources>

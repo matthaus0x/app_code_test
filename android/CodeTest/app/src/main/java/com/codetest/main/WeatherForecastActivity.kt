@@ -1,6 +1,7 @@
 package com.codetest.main
 
 import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
@@ -14,17 +15,34 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class WeatherForecastActivity : AppCompatActivity() {
 
-    private var adapter = ListAdapter()
+    private lateinit var adapter: ListAdapter
+
     private var locations: List<Location> = arrayListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(com.codetest.R.layout.activity_main)
 
-        adapter = ListAdapter()
+        adapter = ListAdapter(onItemSelected = {locationId ->
+            AlertDialog.Builder(this)
+                .setTitle(resources.getString(R.string.remote_local_title))
+                .setMessage(resources.getString(R.string.remote_local_description))
+                .setPositiveButton(resources.getString(R.string.ok)) { _, _ ->
+                    LocationHelper.deleteLocations(locationId) {}
+                }
+                .create()
+                .show()
+        })
+
         recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         recyclerView.adapter = adapter
         adapter.notifyDataSetChanged()
+
+        btn_add_forecast_location.setOnClickListener {
+            Intent(this, AddWeatherLocationForecastActivity::class.java).also {
+                startActivity(it)
+            }
+        }
     }
 
     override fun onResume() {
@@ -52,13 +70,13 @@ class WeatherForecastActivity : AppCompatActivity() {
             .show()
     }
 
-    private inner class ListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private inner class ListAdapter(val onItemSelected: (String) -> Unit) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         override fun getItemCount(): Int {
             return locations.size
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-            return LocationViewHolder.create(parent)
+            return LocationViewHolder.create(parent, onItemSelected)
         }
 
         override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int) {

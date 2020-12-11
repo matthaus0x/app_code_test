@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="forecast_status">
+        <item>CLOUDY</item>
+        <item>SUNNY</item>
+        <item>MOSTLY_SUNNY</item>
+        <item>PARTLY_SUNNY</item>
+        <item>PARTLY_SUNNY_RAIN</item>
+        <item>THUNDER_CLOUD_AND_RAIN</item>
+        <item>TORNADO</item>
+        <item>BARELY_SUNNY</item>
+        <item>LIGHTENING</item>
+        <item>SNOW_CLOUD</item>
+        <item>RAINY</item>
+    </string-array>
+
+</resources>
