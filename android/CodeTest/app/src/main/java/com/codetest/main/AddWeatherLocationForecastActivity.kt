@@ -8,8 +8,11 @@ import com.codetest.R
 import com.codetest.main.model.NewLocation
 import com.codetest.main.model.Status
 import kotlinx.android.synthetic.main.add_weather_forecast_location.*
+import org.koin.android.ext.android.inject
 
 class AddWeatherLocationForecastActivity : AppCompatActivity() {
+
+    val locationHelper: LocationHelper by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,7 +24,7 @@ class AddWeatherLocationForecastActivity : AppCompatActivity() {
         spn_status.adapter = adapter;
 
         btn_save_forecast_location.setOnClickListener {
-            LocationHelper.postLocations(
+            locationHelper.postLocations(
                 NewLocation(
                     et_forecast_location_name.text.toString(),
                     Status.values().first { it.description == spn_status.selectedItem }.name,

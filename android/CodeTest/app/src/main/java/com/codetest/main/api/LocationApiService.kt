@@ -8,6 +8,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import okhttp3.OkHttpClient
+import org.koin.experimental.property.inject
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -22,25 +23,7 @@ interface LocationApi {
     fun delete(@Header("X-Api-Key") apiKey: String, @Url url: String): Observable<JsonObject>
 }
 
-class LocationApiService {
-    private val api: LocationApi
-
-    companion object {
-        private val instance = LocationApiService()
-        fun getApi(): LocationApiService =
-            instance
-    }
-
-    init {
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://app-code-test.kry.pet/")
-                .client(OkHttpClient().newBuilder().build())
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create()))
-            .build()
-
-        api = retrofit.create(LocationApi::class.java)
-    }
+class LocationApiService(private val api: LocationApi ) {
 
     fun get(apiKey: String, url: String, success: (JsonObject) -> Unit, error: (String?) -> Unit) {
         api.get(apiKey, url)
