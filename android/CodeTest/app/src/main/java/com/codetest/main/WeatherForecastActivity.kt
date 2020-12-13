@@ -11,9 +11,12 @@ import com.codetest.R
 import com.codetest.main.model.Location
 import com.codetest.main.ui.LocationViewHolder
 import kotlinx.android.synthetic.main.activity_main.*
+import org.koin.android.ext.android.inject
 
 
 class WeatherForecastActivity : AppCompatActivity() {
+
+    val locationHelper: LocationHelper by inject()
 
     private lateinit var adapter: ListAdapter
 
@@ -28,7 +31,7 @@ class WeatherForecastActivity : AppCompatActivity() {
                 .setTitle(resources.getString(R.string.remote_local_title))
                 .setMessage(resources.getString(R.string.remote_local_description))
                 .setPositiveButton(resources.getString(R.string.ok)) { _, _ ->
-                    LocationHelper.deleteLocations(locationId) {}
+                    locationHelper.deleteLocations(locationId) {}
                 }
                 .create()
                 .show()
@@ -51,7 +54,7 @@ class WeatherForecastActivity : AppCompatActivity() {
     }
 
     private fun fetchLocations() {
-        LocationHelper.getLocations { response ->
+        locationHelper.getLocations { response ->
             if (response == null) {
                 showError()
             } else {
