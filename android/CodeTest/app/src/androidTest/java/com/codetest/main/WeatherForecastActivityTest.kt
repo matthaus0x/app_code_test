@@ -9,6 +9,7 @@ import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
 import com.codetest.R
 import com.codetest.main.features.weather_list.WeatherForecastActivity
+import com.codetest.main.features.weather_list.WeatherForecastViewModel
 import com.codetest.network.model.Location
 import com.codetest.network.model.LocationsResponse
 import com.codetest.network.model.Status
@@ -18,9 +19,11 @@ import io.mockk.every
 import io.mockk.mockk
 import io.reactivex.Observable
 import org.hamcrest.Matchers.allOf
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.core.context.loadKoinModules
 import org.koin.dsl.module
 
@@ -30,6 +33,15 @@ class WeatherForecastActivityTest {
     @get:Rule
     var activityRule: ActivityTestRule<WeatherForecastActivity>
             = ActivityTestRule(WeatherForecastActivity::class.java, false, false)
+
+    @Before
+    fun setup() {
+        loadKoinModules(
+            module(override = true) {
+                viewModel { WeatherForecastViewModel(get()) }
+            }
+        )
+    }
 
     @Test
     fun shouldShowRightForecastsCount_whenSuccessResponse() {
