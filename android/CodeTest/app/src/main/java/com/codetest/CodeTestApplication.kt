@@ -3,6 +3,7 @@ package com.codetest
 import android.app.Application
 import android.content.Context
 import com.codetest.di.applicationModule
+import com.codetest.main.features.weather_list.di.weatherForecastModule
 import com.codetest.network.networkModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -22,7 +23,7 @@ class CodeTestApplication : Application() {
         startKoin {
             androidLogger()
             androidContext(this@CodeTestApplication)
-            modules(applicationModule, networkModule)
+            modules(applicationModule, networkModule, weatherForecastModule)
         }
     }
 }
