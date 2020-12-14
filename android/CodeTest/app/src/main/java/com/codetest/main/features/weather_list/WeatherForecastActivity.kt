@@ -1,4 +1,4 @@
-package com.codetest.main
+package com.codetest.main.features.weather_list
 
 import android.app.AlertDialog
 import android.content.Intent
@@ -8,19 +8,25 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
 import com.codetest.R
-import com.codetest.main.model.Location
-import com.codetest.main.ui.LocationViewHolder
+import com.codetest.main.features.add_weather.AddWeatherLocationForecastActivity
+import com.codetest.network.model.Location
+import com.codetest.network.repository.LocationRepository
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.android.ext.android.inject
 
 
 class WeatherForecastActivity : AppCompatActivity() {
 
-    val locationHelper: LocationHelper by inject()
+    val locationHelper: LocationRepository by inject()
 
     private lateinit var adapter: ListAdapter
 
     private var locations: List<Location> = arrayListOf()
+
+    private val compositeDisposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +37,17 @@ class WeatherForecastActivity : AppCompatActivity() {
                 .setTitle(resources.getString(R.string.remote_local_title))
                 .setMessage(resources.getString(R.string.remote_local_description))
                 .setPositiveButton(resources.getString(R.string.ok)) { _, _ ->
-                    locationHelper.deleteLocations(locationId) {}
+                    compositeDisposable.add(
+                        locationHelper
+                            .deleteLocations(locationId)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe({
+                                fetchLocations()
+                            }, {
+                                showError()
+                            })
+                    )
                 }
                 .create()
                 .show()
@@ -54,23 +70,32 @@ class WeatherForecastActivity : AppCompatActivity() {
     }
 
     private fun fetchLocations() {
-        locationHelper.getLocations { response ->
-            if (response == null) {
-                showError()
-            } else {
-                locations = response
-                adapter.notifyDataSetChanged()
-            }
-        }
+        compositeDisposable.add(
+            locationHelper
+                .getLocations()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe ({ response ->
+                    locations = response.locations
+                    adapter.notifyDataSetChanged()
+                }, {
+                    showError()
+                })
+        )
     }
 
     private fun showError() {
         AlertDialog.Builder(this)
             .setTitle(resources.getString(R.string.error_title))
-            .setMessage(resources.getString(R.string.error_title))
+            .setMessage(resources.getString(R.string.error_message))
             .setPositiveButton(resources.getString(R.string.ok), { _, _ -> })
             .create()
             .show()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        compositeDisposable.dispose()
     }
 
     private inner class ListAdapter(val onItemSelected: (String) -> Unit) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {

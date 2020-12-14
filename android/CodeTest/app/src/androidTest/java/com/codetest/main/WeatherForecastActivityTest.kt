@@ -3,17 +3,21 @@ package com.codetest.main
 import android.content.Intent
 import android.support.test.espresso.Espresso.onView
 import android.support.test.espresso.assertion.ViewAssertions.matches
-import android.support.test.espresso.matcher.ViewMatchers.hasChildCount
-import android.support.test.espresso.matcher.ViewMatchers.withId
+import android.support.test.espresso.matcher.RootMatchers.isDialog
+import android.support.test.espresso.matcher.ViewMatchers.*
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
 import com.codetest.R
-import com.codetest.main.model.Location
-import com.codetest.main.model.Status
+import com.codetest.main.features.weather_list.WeatherForecastActivity
+import com.codetest.network.model.Location
+import com.codetest.network.model.LocationsResponse
+import com.codetest.network.model.Status
+import com.codetest.network.repository.LocationRepository
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
-import kotlinx.android.synthetic.main.activity_main.view.*
+import io.reactivex.Observable
+import org.hamcrest.Matchers.allOf
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -30,20 +34,18 @@ class WeatherForecastActivityTest {
     @Test
     fun shouldShowRightForecastsCount_whenSuccessResponse() {
         //Setup
-        val locationHelperMock = mockk<LocationHelper>()
+        val locationRepository = mockk<LocationRepository>()
         val locations = listOf(
             Location("id", "City", "10", Status.BARELY_SUNNY),
             Location("id2", "City 2", "5", Status.CLOUDY)
         )
 
-        every { locationHelperMock.getLocations(any()) } answers {
-            firstArg<(List<Location>) -> Unit>().invoke(locations)
-        }
+        every { locationRepository.getLocations() } returns Observable.just(LocationsResponse(locations))
 
         loadKoinModules(
-            module {
-                single<LocationHelper> {
-                    locationHelperMock
+            module(override = true) {
+                single {
+                    locationRepository
                 }
             }
         )
@@ -53,6 +55,33 @@ class WeatherForecastActivityTest {
 
         //Assertion
         onView(withId(R.id.recyclerView)).check(matches(hasChildCount(2)))
+
+        //Tear down
+        confirmVerified()
+    }
+
+    @Test
+    fun shouldShowErrorMessage_whenErrorResponse() {
+        //Setup
+        val locationRepository = mockk<LocationRepository>()
+
+        every { locationRepository.getLocations() } returns Observable.error(Exception("Mocked Error"))
+
+        loadKoinModules(
+            module(override = true) {
+                single {
+                    locationRepository
+                }
+            }
+        )
+
+        //Action
+        activityRule.launchActivity(Intent())
+
+        //Assertion
+        onView(withText("Error"))
+            .inRoot(isDialog())
+            .check(matches(isDisplayed()))
 
         //Tear down
         confirmVerified()
