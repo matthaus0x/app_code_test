@@ -1,10 +1,10 @@
-package com.codetest.main.ui
+package com.codetest.main.features.weather_list
 
 import android.support.v7.widget.RecyclerView
 import android.view.*
 import com.codetest.R
-import com.codetest.main.model.Location
-import com.codetest.main.model.Status
+import com.codetest.network.model.Location
+import com.codetest.network.model.Status
 import kotlinx.android.synthetic.main.location.view.*
 
 
